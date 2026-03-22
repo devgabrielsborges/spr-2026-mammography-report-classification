@@ -15,6 +15,9 @@ class XGBoostClassifierModel(BaseModel):
 
     def build_model(self, params: dict | None = None):
         params = params or {}
+        if self.device == "cuda":
+            params.setdefault("device", "cuda")
+            params.setdefault("tree_method", "gpu_hist")
         return XGBClassifier(verbosity=0, n_jobs=-1, **params)
 
     def suggest_params(self, trial: optuna.Trial) -> dict:

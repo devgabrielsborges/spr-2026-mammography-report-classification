@@ -15,6 +15,8 @@ class CatBoostClassifierModel(BaseModel):
 
     def build_model(self, params: dict | None = None):
         params = params or {}
+        if self.device == "cuda":
+            params.setdefault("task_type", "GPU")
         return CatBoostClassifier(verbose=0, **params)
 
     def suggest_params(self, trial: optuna.Trial) -> dict:

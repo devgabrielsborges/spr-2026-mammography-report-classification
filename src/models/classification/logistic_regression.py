@@ -20,7 +20,6 @@ class LogisticRegressionModel(BaseModel):
     def suggest_params(self, trial: optuna.Trial) -> dict:
         return {
             "C": trial.suggest_float("C", 1e-4, 10.0, log=True),
-            "penalty": trial.suggest_categorical("penalty", ["l1", "l2", "elasticnet"]),
             "l1_ratio": trial.suggest_float("l1_ratio", 0.0, 1.0),
             "max_iter": trial.suggest_int("max_iter", 100, 1000, step=100),
         }

@@ -43,13 +43,13 @@ init:
 
 train-%:
 	@set -a && [ -f .env ] && . ./.env && set +a; \
-	uv run --python 3.11 src/models/$*.py
+	uv run --python 3.11 src/models/classification/$*.py
 
 train-all:
 	@for model in $(MODELS); do \
 		echo "\n========== Training $$model =========="; \
 		set -a && [ -f .env ] && . ./.env && set +a; \
-		uv run --python 3.11 src/models/$$model.py; \
+		uv run --python 3.11 src/models/classification/$$model.py; \
 	done
 
 clean:

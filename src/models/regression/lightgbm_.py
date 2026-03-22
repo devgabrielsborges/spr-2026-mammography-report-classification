@@ -15,6 +15,8 @@ class LightGBMRegressorModel(BaseModel):
 
     def build_model(self, params: dict | None = None):
         params = params or {}
+        if self.device == "cuda":
+            params.setdefault("device", "gpu")
         return LGBMRegressor(verbosity=-1, n_jobs=-1, **params)
 
     def suggest_params(self, trial: optuna.Trial) -> dict:
