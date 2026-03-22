@@ -60,7 +60,11 @@ CLASSIFICATION_METRICS = {
     ),
     "recall": lambda y, p, **_: recall_score(y, p, average="weighted", zero_division=0),
     "roc_auc": lambda y, p, proba=None, **_: (
-        roc_auc_score(y, proba) if proba is not None else None
+        roc_auc_score(y, proba, multi_class="ovr", average="weighted")
+        if proba is not None and hasattr(proba, "ndim") and proba.ndim == 2
+        else roc_auc_score(y, proba)
+        if proba is not None
+        else None
     ),
     "log_loss": lambda y, p, proba=None, **_: (
         log_loss(y, proba) if proba is not None else None
@@ -166,8 +170,8 @@ class BaseModel(ABC):
         fig.savefig(plots_dir / "confusion_matrix.png", dpi=150, bbox_inches="tight")
         plt.close(fig)
 
-        if y_proba is not None:
-            # Detect positive label for string/non-binary targets
+        is_binary = y_proba is not None and y_proba.ndim == 1
+        if is_binary:
             unique_labels = np.unique(y_true)
             pos_label = unique_labels[-1] if len(unique_labels) == 2 else None
 
