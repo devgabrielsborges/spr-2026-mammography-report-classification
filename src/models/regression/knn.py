@@ -22,7 +22,7 @@ class KNNRegressorModel(BaseModel):
             "n_neighbors": trial.suggest_int("n_neighbors", 3, 50),
             "weights": trial.suggest_categorical("weights", ["uniform", "distance"]),
             "metric": trial.suggest_categorical(
-                "distance_metric", ["euclidean", "manhattan", "minkowski"]
+                "metric", ["euclidean", "manhattan", "minkowski"]
             ),
             "p": trial.suggest_int("p", 1, 5),
         }
