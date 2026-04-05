@@ -1,0 +1,35 @@
+---
+description: Project Development Guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# spr-2026-mammography-report-classification Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-04-04
+
+## Active Technologies
+
+- Python >=3.11, <3.13 (via uv) + scikit-learn, XGBoost, LightGBM, CatBoost, Optuna, pandas, NumPy, SciPy, matplotlib, sentence-transformers, mlflow 3.9.0, DVC (new), transformers + torch (existing via sentence-transformers) (001-birads-classification)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] pytest [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] ruff check .
+
+## Code Style
+
+Python >=3.11, <3.13 (via uv): Follow standard conventions
+
+## Recent Changes
+
+- 001-birads-classification: Added Python >=3.11, <3.13 (via uv) + scikit-learn, XGBoost, LightGBM, CatBoost, Optuna, pandas, NumPy, SciPy, matplotlib, sentence-transformers, mlflow 3.9.0, DVC (new), transformers + torch (existing via sentence-transformers)
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

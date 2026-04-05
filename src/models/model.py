@@ -10,11 +10,12 @@ import numpy as np
 import optuna
 from dotenv import load_dotenv
 from sklearn.metrics import (ConfusionMatrixDisplay, PrecisionRecallDisplay,
-                             RocCurveDisplay, accuracy_score, f1_score,
-                             get_scorer, log_loss, mean_absolute_error,
+                             RocCurveDisplay, accuracy_score,
+                             classification_report, f1_score, get_scorer,
+                             log_loss, mean_absolute_error,
                              mean_squared_error, precision_score, r2_score,
                              recall_score, roc_auc_score)
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -31,6 +32,7 @@ DEVICE = os.getenv("DEVICE", "cpu").lower()
 SKLEARN_SCORING = {
     "accuracy": "accuracy",
     "f1": "f1_weighted",
+    "f1_macro": "f1_macro",
     "precision": "precision_weighted",
     "recall": "recall_weighted",
     "roc_auc": "roc_auc",
@@ -43,6 +45,7 @@ SKLEARN_SCORING = {
 METRIC_DIRECTION = {
     "accuracy": "maximize",
     "f1": "maximize",
+    "f1_macro": "maximize",
     "precision": "maximize",
     "recall": "maximize",
     "roc_auc": "maximize",
@@ -55,6 +58,7 @@ METRIC_DIRECTION = {
 CLASSIFICATION_METRICS = {
     "accuracy": lambda y, p, **_: accuracy_score(y, p),
     "f1": lambda y, p, **_: f1_score(y, p, average="weighted"),
+    "f1_macro": lambda y, p, **_: f1_score(y, p, average="macro", zero_division=0),
     "precision": lambda y, p, **_: precision_score(
         y, p, average="weighted", zero_division=0
     ),
@@ -113,7 +117,10 @@ class BaseModel(ABC):
     def _objective(self, trial: optuna.Trial, X_train, y_train):
         params = self.suggest_params(trial)
         model = self.build_model(params)
-        scores = cross_val_score(model, X_train, y_train, cv=5, scoring=self.scoring)
+        cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+        scores = cross_val_score(
+            model, X_train, y_train, cv=cv, scoring=self.scoring
+        )
         return scores.mean()
 
     def optimize(self, X_train, y_train):
@@ -157,6 +164,16 @@ class BaseModel(ABC):
                 value = fn(y_true, y_pred, proba=y_proba)
                 if value is not None:
                     results[name] = value
+
+            if self.task_type == "classification":
+                report = classification_report(
+                    y_true, y_pred, output_dict=True, zero_division=0
+                )
+                for label, metrics in report.items():
+                    if isinstance(metrics, dict):
+                        for metric_name, value in metrics.items():
+                            results[f"class_{label}_{metric_name}"] = value
+
             return results
 
         scorer = get_scorer(self.scoring)

@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0",
+  "presets": {
+    "stargazer": {
+      "version": "1.0.0",
+      "source": "local",
+      "manifest_hash": "sha256:9d7fa4c529d3c72459a428bb0f47dd74580b06971663b257a603f60ac36da8b1",
+      "enabled": true,
+      "priority": 10,
+      "registered_commands": {
+        "cursor": [
+          "speckit.specify"
+        ]
+      },
+      "registered_skills": [],
+      "installed_at": "2026-04-05T01:38:51.234306+00:00"
+    }
+  }
+}

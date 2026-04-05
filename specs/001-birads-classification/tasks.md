@@ -34,10 +34,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete — all downstream experiments depend on the correct metric.
 
-- [ ] T007 Add `f1_macro` entry to `SKLEARN_SCORING`, `METRIC_DIRECTION`, and `CLASSIFICATION_METRICS` dictionaries in `src/models/model.py`. In `SKLEARN_SCORING`: `"f1_macro": "f1_macro"`. In `METRIC_DIRECTION`: `"f1_macro": "maximize"`. In `CLASSIFICATION_METRICS`: `"f1_macro": lambda y, p, **_: f1_score(y, p, average="macro", zero_division=0)`
-- [ ] T008 [P] Update `.env`: change `METRIC="accuracy"` to `METRIC="f1_macro"`
-- [ ] T009 Add per-class precision, recall, and F1 logging to `BaseModel.evaluate()` in `src/models/model.py` — when `LOG_ALL_METRICS=True` and `task_type="classification"`, compute and return `sklearn.metrics.classification_report` metrics per BI-RADS class (0–6)
-- [ ] T010 Refactor `BaseModel._objective()` in `src/models/model.py` to use stratified 5-fold CV explicitly via `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)` instead of relying on the default `cv=5` integer, ensuring class proportions are preserved in each fold
+- [X] T007 Add `f1_macro` entry to `SKLEARN_SCORING`, `METRIC_DIRECTION`, and `CLASSIFICATION_METRICS` dictionaries in `src/models/model.py`. In `SKLEARN_SCORING`: `"f1_macro": "f1_macro"`. In `METRIC_DIRECTION`: `"f1_macro": "maximize"`. In `CLASSIFICATION_METRICS`: `"f1_macro": lambda y, p, **_: f1_score(y, p, average="macro", zero_division=0)`
+- [X] T008 [P] Update `.env`: change `METRIC="accuracy"` to `METRIC="f1_macro"`
+- [X] T009 Add per-class precision, recall, and F1 logging to `BaseModel.evaluate()` in `src/models/model.py` — when `LOG_ALL_METRICS=True` and `task_type="classification"`, compute and return `sklearn.metrics.classification_report` metrics per BI-RADS class (0–6)
+- [X] T010 Refactor `BaseModel._objective()` in `src/models/model.py` to use stratified 5-fold CV explicitly via `StratifiedKFold(n_splits=5, shuffle=True, random_state=42)` instead of relying on the default `cv=5` integer, ensuring class proportions are preserved in each fold
 
 **Checkpoint**: Foundation ready — macro-F1 is the primary metric, per-class metrics are logged, and stratified 5-fold CV is the default validation strategy. User story implementation can now begin.
 
