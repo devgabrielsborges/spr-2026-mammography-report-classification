@@ -41,6 +41,7 @@ services:
       /bin/sh -c "
       mc alias set myminio http://minio:9000 minioadmin minioadmin &&
       mc mb myminio/mlflow --ignore-existing &&
+      mc mb myminio/dvc --ignore-existing &&
       exit 0
       "
 

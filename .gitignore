@@ -11,6 +11,8 @@ wheels/
 
 .env
 
-data
+data/raw/
+data/processed/
+notebooks/outputs/
 
 uv.lock
