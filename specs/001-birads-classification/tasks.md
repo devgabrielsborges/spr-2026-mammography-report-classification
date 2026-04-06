@@ -51,10 +51,10 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Create `notebooks/baseline.ipynb` with a tagged `parameters` cell containing: `RANDOM_STATE = 42`, `N_FOLDS = 5`, `METRIC = "f1_macro"`, `DATA_PATH = "data/raw/train.csv"`, `MLFLOW_EXPERIMENT = "birads-baseline"`
-- [ ] T012 [US1] Implement majority-class baseline in `notebooks/baseline.ipynb`: load `train.csv`, compute majority class (class 2), generate constant predictions, calculate macro-F1 (expected ≈ 0.07), and print per-class classification report
-- [ ] T013 [US1] Implement regex + logistic regression baseline in `notebooks/baseline.ipynb`: use existing `extract_features()` from `src/preprocessing/preprocess.py`, fit `LogisticRegression(class_weight='balanced')` with stratified 5-fold CV, compute mean macro-F1 across folds, and print per-class metrics
-- [ ] T014 [US1] Log both baselines to MLflow in `notebooks/baseline.ipynb`: log `cv_f1_macro`, per-class F1 scores, confusion matrix plot, and set tags `baseline=true`, `feature_set_version=v0.0` (majority) / `v1.0` (regex), `cv_strategy=stratified_5fold`
+- [X] T011 [US1] Create `notebooks/baseline.ipynb` with a tagged `parameters` cell containing: `RANDOM_STATE = 42`, `N_FOLDS = 5`, `METRIC = "f1_macro"`, `DATA_PATH = "data/raw/train.csv"`, `MLFLOW_EXPERIMENT = "birads-baseline"`
+- [X] T012 [US1] Implement majority-class baseline in `notebooks/baseline.ipynb`: load `train.csv`, compute majority class (class 2), generate constant predictions, calculate macro-F1 (expected ≈ 0.07), and print per-class classification report
+- [X] T013 [US1] Implement regex + logistic regression baseline in `notebooks/baseline.ipynb`: use existing `extract_features()` from `src/preprocessing/preprocess.py`, fit `LogisticRegression(class_weight='balanced')` with stratified 5-fold CV, compute mean macro-F1 across folds, and print per-class metrics
+- [X] T014 [US1] Log both baselines to MLflow in `notebooks/baseline.ipynb`: log `cv_f1_macro`, per-class F1 scores, confusion matrix plot, and set tags `baseline=true`, `feature_set_version=v0.0` (majority) / `v1.0` (regex), `cv_strategy=stratified_5fold`
 
 **Checkpoint**: User Story 1 complete — majority-class and regex baselines established with macro-F1. The performance floor is documented in MLflow.
 
