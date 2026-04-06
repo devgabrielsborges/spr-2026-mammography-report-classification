@@ -12,9 +12,10 @@ import pandas as pd
 from dotenv import load_dotenv
 from scipy import sparse
 from sklearn.compose import ColumnTransformer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder
+from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, OrdinalEncoder
 
 ACHADOS_PATTERNS = {
     "achado_calcif_benignas": r"[Cc]alcificações benignas",
@@ -102,6 +103,77 @@ def extract_features(df: pd.DataFrame) -> pd.DataFrame:
     df["analise_comparativa"] = report.apply(_extract_analise_comparativa)
 
     return df
+
+
+def _clean_text_for_tfidf(texts) -> pd.Series:
+    """Lowercase and remove <DATA> tokens; keep Portuguese accented characters."""
+    s = pd.Series(texts) if not isinstance(texts, pd.Series) else texts
+    return s.str.lower().str.replace("<DATA>", " ", regex=False).str.strip()
+
+
+def build_tfidf_pipeline(
+    max_word_features: int = 10_000,
+    max_char_features: int = 20_000,
+) -> ColumnTransformer:
+    """Build a ColumnTransformer that combines TF-IDF (word + char n-grams),
+    regex binary features (passthrough), and categorical features (one-hot).
+
+    Expects a DataFrame with columns:
+      - ``report``: raw report text
+      - all keys in ``ACHADOS_PATTERNS``: binary regex features (int 0/1)
+      - ``indicacao_class``: categorical feature (str)
+    """
+    achado_cols = list(ACHADOS_PATTERNS.keys())
+
+    word_tfidf = Pipeline([
+        (
+            "clean",
+            FunctionTransformer(
+                _clean_text_for_tfidf, validate=False, feature_names_out="one-to-one"
+            ),
+        ),
+        (
+            "tfidf",
+            TfidfVectorizer(
+                analyzer="word",
+                ngram_range=(1, 2),
+                max_features=max_word_features,
+                sublinear_tf=True,
+            ),
+        ),
+    ])
+
+    char_tfidf = Pipeline([
+        (
+            "clean",
+            FunctionTransformer(
+                _clean_text_for_tfidf, validate=False, feature_names_out="one-to-one"
+            ),
+        ),
+        (
+            "tfidf",
+            TfidfVectorizer(
+                analyzer="char_wb",
+                ngram_range=(3, 5),
+                max_features=max_char_features,
+                sublinear_tf=True,
+            ),
+        ),
+    ])
+
+    return ColumnTransformer(
+        transformers=[
+            ("word_tfidf", word_tfidf, "report"),
+            ("char_tfidf", char_tfidf, "report"),
+            ("regex", "passthrough", achado_cols),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                ["indicacao_class"],
+            ),
+        ],
+        remainder="drop",
+    )
 
 
 def preprocess_data(data: pd.DataFrame, target_column: str | None = None):
