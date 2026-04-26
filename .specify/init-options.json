@@ -1,11 +1,10 @@
 {
-  "ai": "cursor-agent",
-  "ai_commands_dir": null,
-  "ai_skills": false,
+  "ai": "gemini",
   "branch_numbering": "sequential",
+  "context_file": "GEMINI.md",
   "here": true,
-  "offline": true,
+  "integration": "gemini",
   "preset": null,
   "script": "sh",
-  "speckit_version": "0.4.3"
+  "speckit_version": "0.7.4.dev0"
 }

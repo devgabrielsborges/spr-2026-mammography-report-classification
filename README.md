@@ -14,21 +14,22 @@ A ready-to-use ML experiment pipeline for Kaggle competitions. Download data, pr
 
 ```
 ├── data/
-│   ├── raw/                # Downloaded CSV files
-│   └── processed/          # Preprocessed NumPy arrays
+│   ├── raw/                # Downloaded CSV files (DVC tracked)
+│   └── processed/          # Preprocessed NumPy arrays (DVC tracked)
 ├── notebooks/
+│   ├── baseline.ipynb      # US1: Majority-class and regex baselines
+│   ├── tfidf_classical.ipynb # US2: TF-IDF + Gradient Boosting
+│   ├── transformer.ipynb   # US3: BERTimbau fine-tuning
+│   ├── ensemble.ipynb      # US4: Model ensembling
+│   ├── kaggle_submission.ipynb # US4: Submission generator
 │   └── eda.ipynb           # Exploratory data analysis
 ├── src/
 │   ├── config/
 │   │   └── mlflow_init.py  # MLflow experiment setup
 │   ├── models/
 │   │   ├── model.py        # BaseModel + training loop
-│   │   ├── logistic_regression.py
-│   │   ├── random_forest.py
-│   │   ├── svm.py
-│   │   ├── xgboost_.py
-│   │   ├── gradient_boosting.py
-│   │   └── knn.py
+│   │   ├── classification/ # 12 classifier implementations
+│   │   └── regression/     # Regression models (unused)
 │   ├── preprocessing/
 │   │   └── preprocess.py   # Feature engineering pipeline
 │   └── utils/
@@ -46,16 +47,11 @@ A ready-to-use ML experiment pipeline for Kaggle competitions. Download data, pr
 
 ```bash
 cp .env.example .env
-# Edit .env to match your competition
+# Edit .env:
+# METRIC="f1_macro"
+# TASK_TYPE="classification"
+# TARGET_COLUMN="target"
 ```
-
-| Variable | Description | Example |
-|---|---|---|
-| `KAGGLE_COMPETITION_NAME` | Kaggle competition slug | `playground-series-s6e2` |
-| `TARGET_COLUMN` | Name of the target column | `Heart Disease` |
-| `METRIC` | Optimization metric | `accuracy` |
-| `TASK_TYPE` | `classification` or `regression` | `classification` |
-| `MLFLOW_TRACKING_URI` | MLflow server URL | `http://localhost:5000` |
 
 ### 2. Install dependencies
 
@@ -69,49 +65,48 @@ uv sync
 make up
 ```
 
-This spins up PostgreSQL, MinIO, and the MLflow server.
+### 4. Initialize DVC (MinIO remote)
 
-| Service | URL | Credentials |
-|---|---|---|
-| MLflow UI | http://localhost:5000 | — |
-| MinIO Console | http://localhost:9001 | `minioadmin` / `minioadmin` |
+```bash
+dvc init
+dvc remote add -d minio s3://dvc
+dvc remote modify minio endpointurl http://localhost:9002
+dvc remote modify minio access_key_id minioadmin
+dvc remote modify minio secret_access_key minioadmin
+```
 
-### 4. Download and preprocess data
+### 5. Download and version data
 
 ```bash
 make init
+dvc add data/raw data/processed
+dvc push
 ```
 
-> **Note:** Requires Kaggle credentials configured at `~/.kaggle/kaggle.json`.
-
-### 5. Train models
+### 6. Run Experiment Notebooks
 
 ```bash
-make train-random_forest    # single model
-make train-all              # all models sequentially
+# Established baselines
+papermill notebooks/baseline.ipynb notebooks/outputs/baseline.ipynb
+
+# TF-IDF + Classical ML
+papermill notebooks/tfidf_classical.ipynb notebooks/outputs/tfidf.ipynb
+
+# Transformer Fine-tuning (BERTimbau)
+papermill notebooks/transformer.ipynb notebooks/outputs/transformer.ipynb
+
+# Ensemble & Submission
+papermill notebooks/ensemble.ipynb notebooks/outputs/ensemble.ipynb
 ```
 
-Available models: `logistic_regression`, `random_forest`, `svm`, `xgboost_`, `gradient_boosting`, `knn`.
+## MLflow Tracking
 
-### 6. Tear down
-
-```bash
-make down     # stop services
-make clean    # stop services and delete volumes
-```
-
-## Available Models
-
-Each model inherits from `BaseModel` and defines its own Optuna search space. The training loop automatically handles cross-validation, metric logging, and artifact storage.
-
-| Model | Classification | Regression |
-|---|---|---|
-| Logistic Regression | LogisticRegression | — |
-| Random Forest | RandomForestClassifier | RandomForestRegressor |
-| SVM | SVC | SVR |
-| XGBoost | XGBClassifier | XGBRegressor |
-| Gradient Boosting | GradientBoostingClassifier | GradientBoostingRegressor |
-| KNN | KNeighborsClassifier | KNeighborsRegressor |
+Every training run logs:
+- Model type, task type, and optimization metric (macro-F1)
+- Best hyperparameters from Optuna
+- Cross-validation score (Stratified 5-Fold)
+- Per-class precision, recall, and F1 scores
+- Confusion matrix plot artifact
 
 ## Preprocessing
 

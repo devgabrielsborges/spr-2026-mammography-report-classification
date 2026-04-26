@@ -125,41 +125,49 @@ def build_tfidf_pipeline(
     """
     achado_cols = list(ACHADOS_PATTERNS.keys())
 
-    word_tfidf = Pipeline([
-        (
-            "clean",
-            FunctionTransformer(
-                _clean_text_for_tfidf, validate=False, feature_names_out="one-to-one"
+    word_tfidf = Pipeline(
+        [
+            (
+                "clean",
+                FunctionTransformer(
+                    _clean_text_for_tfidf,
+                    validate=False,
+                    feature_names_out="one-to-one",
+                ),
             ),
-        ),
-        (
-            "tfidf",
-            TfidfVectorizer(
-                analyzer="word",
-                ngram_range=(1, 2),
-                max_features=max_word_features,
-                sublinear_tf=True,
+            (
+                "tfidf",
+                TfidfVectorizer(
+                    analyzer="word",
+                    ngram_range=(1, 2),
+                    max_features=max_word_features,
+                    sublinear_tf=True,
+                ),
             ),
-        ),
-    ])
+        ]
+    )
 
-    char_tfidf = Pipeline([
-        (
-            "clean",
-            FunctionTransformer(
-                _clean_text_for_tfidf, validate=False, feature_names_out="one-to-one"
+    char_tfidf = Pipeline(
+        [
+            (
+                "clean",
+                FunctionTransformer(
+                    _clean_text_for_tfidf,
+                    validate=False,
+                    feature_names_out="one-to-one",
+                ),
             ),
-        ),
-        (
-            "tfidf",
-            TfidfVectorizer(
-                analyzer="char_wb",
-                ngram_range=(3, 5),
-                max_features=max_char_features,
-                sublinear_tf=True,
+            (
+                "tfidf",
+                TfidfVectorizer(
+                    analyzer="char_wb",
+                    ngram_range=(3, 5),
+                    max_features=max_char_features,
+                    sublinear_tf=True,
+                ),
             ),
-        ),
-    ])
+        ]
+    )
 
     return ColumnTransformer(
         transformers=[
@@ -178,7 +186,7 @@ def build_tfidf_pipeline(
 
 def preprocess_data(data: pd.DataFrame, target_column: str | None = None):
     target_column = target_column or os.getenv("TARGET_COLUMN", "target")
-    id_column = os.getenv("ID_COLUMN", "ID")
+    os.getenv("ID_COLUMN", "ID")
 
     data = extract_features(data)
 
@@ -199,9 +207,7 @@ def preprocess_data(data: pd.DataFrame, target_column: str | None = None):
         steps=[
             (
                 "ordinal",
-                OrdinalEncoder(
-                    handle_unknown="use_encoded_value", unknown_value=-1
-                ),
+                OrdinalEncoder(handle_unknown="use_encoded_value", unknown_value=-1),
             )
         ]
     )

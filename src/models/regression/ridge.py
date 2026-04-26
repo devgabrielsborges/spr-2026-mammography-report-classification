@@ -20,9 +20,7 @@ class RidgeRegressionModel(BaseModel):
     def suggest_params(self, trial: optuna.Trial) -> dict:
         return {
             "alpha": trial.suggest_float("alpha", 1e-4, 100.0, log=True),
-            "fit_intercept": trial.suggest_categorical(
-                "fit_intercept", [True, False]
-            ),
+            "fit_intercept": trial.suggest_categorical("fit_intercept", [True, False]),
             "solver": trial.suggest_categorical(
                 "solver", ["auto", "svd", "cholesky", "lsqr", "sag", "saga"]
             ),

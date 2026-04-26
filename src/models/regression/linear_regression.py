@@ -19,9 +19,7 @@ class LinearRegressionModel(BaseModel):
 
     def suggest_params(self, trial: optuna.Trial) -> dict:
         return {
-            "fit_intercept": trial.suggest_categorical(
-                "fit_intercept", [True, False]
-            ),
+            "fit_intercept": trial.suggest_categorical("fit_intercept", [True, False]),
         }
 
 

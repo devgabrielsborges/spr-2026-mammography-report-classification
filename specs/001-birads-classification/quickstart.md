@@ -57,14 +57,23 @@ TASK_TYPE="classification"
 TARGET_COLUMN="target"
 ```
 
-## 6. Run the PoC notebook
+## 6. Run the experiment notebooks
 
 ```bash
-# Open Jupyter and run notebooks/poc_tfidf.ipynb
-jupyter lab notebooks/
+# Established baselines
+papermill notebooks/baseline.ipynb notebooks/outputs/baseline.ipynb
+
+# TF-IDF + Classical ML
+papermill notebooks/tfidf_classical.ipynb notebooks/outputs/tfidf.ipynb
+
+# Transformer Fine-tuning (BERTimbau)
+papermill notebooks/transformer.ipynb notebooks/outputs/transformer.ipynb
+
+# Ensemble & Submission
+papermill notebooks/ensemble.ipynb notebooks/outputs/ensemble.ipynb
 ```
 
-The notebook trains TF-IDF + LightGBM with macro-F1 optimization and class-weight balancing.
+The notebooks train models with macro-F1 optimization and class-weight balancing.
 
 ## 7. Train models via CLI (optional)
 

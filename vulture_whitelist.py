@@ -1,0 +1,29 @@
+"""Vulture whitelist — false positives from Protocol signatures and CLI params."""
+
+path  # noqa
+input_text  # noqa
+session_history  # noqa
+system_prompt  # noqa
+experiment_id  # noqa
+run_id  # noqa
+trace_ids  # noqa
+trace_id  # noqa
+name  # noqa
+value  # noqa
+rationale  # noqa
+status  # noqa
+result  # noqa
+sample  # noqa
+concurrency  # noqa
+mock_mlflow  # noqa
+tag  # noqa
+create_dataset  # noqa
+max_interactions  # noqa
+prediction  # noqa
+ground_truth  # noqa
+GroundTruth  # noqa
+compare_fn  # noqa
+spec  # noqa
+n  # noqa
+t  # noqa
+language  # noqa

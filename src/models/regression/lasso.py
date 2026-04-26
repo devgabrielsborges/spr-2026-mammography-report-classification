@@ -20,9 +20,7 @@ class LassoRegressionModel(BaseModel):
     def suggest_params(self, trial: optuna.Trial) -> dict:
         return {
             "alpha": trial.suggest_float("alpha", 1e-4, 100.0, log=True),
-            "fit_intercept": trial.suggest_categorical(
-                "fit_intercept", [True, False]
-            ),
+            "fit_intercept": trial.suggest_categorical("fit_intercept", [True, False]),
             "max_iter": trial.suggest_int("max_iter", 500, 5000, step=500),
             "tol": trial.suggest_float("tol", 1e-5, 1e-2, log=True),
         }

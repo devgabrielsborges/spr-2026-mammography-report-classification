@@ -88,14 +88,14 @@
 
 ### Implementation for User Story 3
 
-- [ ] T022 [US3] Install transformer dependencies: run `uv add transformers accelerate`
-- [ ] T023 [US3] Create `notebooks/transformer.ipynb` with a tagged `parameters` cell containing: `RANDOM_STATE = 42`, `N_FOLDS = 5`, `METRIC = "f1_macro"`, `DATA_PATH = "data/raw/train.csv"`, `MODEL_NAME = "neuralmind/bert-base-portuguese-cased"`, `MAX_LENGTH = 256`, `BATCH_SIZE = 16`, `LEARNING_RATE = 2e-5`, `NUM_EPOCHS = 5`, `WARMUP_RATIO = 0.1`, `WEIGHT_DECAY = 0.01`, `LOSS_TYPE = "focal"`, `FOCAL_GAMMA = 2.0`, `FREEZE_LAYERS = 0`, `MLFLOW_EXPERIMENT = "birads-transformer"`
-- [ ] T024 [US3] Implement data loading and tokenization in `notebooks/transformer.ipynb`: load `train.csv`, tokenize reports using BERTimbau tokenizer (`max_length=256`, `padding="max_length"`, `truncation=True`), create PyTorch `Dataset` and `DataLoader`, profile truncation rate (expected < 5% of reports)
-- [ ] T025 [US3] Implement model architecture in `notebooks/transformer.ipynb`: load BERTimbau from local path or HuggingFace, add classification head on `[CLS]` token (7-class linear layer + dropout), implement focal loss (`γ=2`) and class-weighted `CrossEntropyLoss` as selectable options, support optional freezing of lower N layers
-- [ ] T026 [US3] Implement training loop in `notebooks/transformer.ipynb`: AdamW optimizer with linear warmup (10% steps) and cosine decay, stratified 5-fold CV, 3–5 epochs per fold, early stopping on validation macro-F1 (patience=2), gradient clipping (max_norm=1.0)
-- [ ] T027 [US3] Add evaluation in `notebooks/transformer.ipynb`: per-class precision/recall/F1, confusion matrix, CV-holdout gap analysis (flag if gap > 2 pp), comparison vs TF-IDF baseline
-- [ ] T028 [US3] Log all runs to MLflow in `notebooks/transformer.ipynb`: log `cv_f1_macro`, `model_name`, `feature_set_version=v3.0`, `loss_type`, `freeze_layers`, per-fold F1, learning curves, confusion matrix plot, model checkpoint artifact
-- [ ] T029 [US3] Profile Kaggle runtime in `notebooks/transformer.ipynb`: measure wall time for tokenization, training (per fold), and inference; estimate total time for full 5-fold training + test inference; flag if projected runtime exceeds 7h (leaving 2h buffer)
+- [X] T022 [US3] Install transformer dependencies: run `uv add transformers accelerate`
+- [X] T023 [US3] Create `notebooks/transformer.ipynb` with a tagged `parameters` cell containing: `RANDOM_STATE = 42`, `N_FOLDS = 5`, `METRIC = "f1_macro"`, `DATA_PATH = "data/raw/train.csv"`, `MODEL_NAME = "neuralmind/bert-base-portuguese-cased"`, `MAX_LENGTH = 256`, `BATCH_SIZE = 16`, `LEARNING_RATE = 2e-5`, `NUM_EPOCHS = 5`, `WARMUP_RATIO = 0.1`, `WEIGHT_DECAY = 0.01`, `LOSS_TYPE = "focal"`, `FOCAL_GAMMA = 2.0`, `FREEZE_LAYERS = 0`, `MLFLOW_EXPERIMENT = "birads-transformer"`
+- [X] T024 [US3] Implement data loading and tokenization in `notebooks/transformer.ipynb`: load `train.csv`, tokenize reports using BERTimbau tokenizer (`max_length=256`, `padding="max_length"`, `truncation=True`), create PyTorch `Dataset` and `DataLoader`, profile truncation rate (expected < 5% of reports)
+- [X] T025 [US3] Implement model architecture in `notebooks/transformer.ipynb`: load BERTimbau from local path or HuggingFace, add classification head on `[CLS]` token (7-class linear layer + dropout), implement focal loss (`γ=2`) and class-weighted `CrossEntropyLoss` as selectable options, support optional freezing of lower N layers
+- [X] T026 [US3] Implement training loop in `notebooks/transformer.ipynb`: AdamW optimizer with linear warmup (10% steps) and cosine decay, stratified 5-fold CV, 3–5 epochs per fold, early stopping on validation macro-F1 (patience=2), gradient clipping (max_norm=1.0)
+- [X] T027 [US3] Add evaluation in `notebooks/transformer.ipynb`: per-class precision/recall/F1, confusion matrix, CV-holdout gap analysis (flag if gap > 2 pp), comparison vs TF-IDF baseline
+- [X] T028 [US3] Log all runs to MLflow in `notebooks/transformer.ipynb`: log `cv_f1_macro`, `model_name`, `feature_set_version=v3.0`, `loss_type`, `freeze_layers`, per-fold F1, learning curves, confusion matrix plot, model checkpoint artifact
+- [X] T029 [US3] Profile Kaggle runtime in `notebooks/transformer.ipynb`: measure wall time for tokenization, training (per fold), and inference; estimate total time for full 5-fold training + test inference; flag if projected runtime exceeds 7h (leaving 2h buffer)
 
 **Checkpoint**: User Story 3 complete — transformer model trained and compared against TF-IDF baseline. Proceed to Phase 6 if transformer macro-F1 exceeds TF-IDF by ≥ 3 pp. If transformer overfits (gap > 3 pp) or exceeds Kaggle runtime, fall back to TF-IDF ensemble.
 
@@ -109,13 +109,14 @@
 
 ### Implementation for User Story 4
 
-- [ ] T030 [US4] Create `notebooks/ensemble.ipynb` with a tagged `parameters` cell containing: `RANDOM_STATE = 42`, `N_FOLDS = 5`, `METRIC = "f1_macro"`, `DATA_PATH = "data/raw/train.csv"`, `ENSEMBLE_METHOD = "soft_voting"`, `MLFLOW_EXPERIMENT = "birads-ensemble"`
-- [ ] T031 [US4] Implement out-of-fold (OOF) prediction collection in `notebooks/ensemble.ipynb`: load saved OOF probability matrices from top 3+ diverse models (at least 2 model families and 2 feature sets), stack into a single array
-- [ ] T032 [US4] Implement weighted soft voting in `notebooks/ensemble.ipynb`: optimize class-probability weights across models using validation fold predictions (scipy.optimize or grid search), evaluate ensemble macro-F1
-- [ ] T033 [US4] Implement logistic regression stacking in `notebooks/ensemble.ipynb`: train a `LogisticRegression(class_weight='balanced')` meta-learner on OOF predictions, evaluate via nested CV, compare vs weighted soft voting
-- [ ] T034 [US4] Log ensemble results to MLflow in `notebooks/ensemble.ipynb`: log `cv_f1_macro`, `ensemble_method`, component model names, ensemble weights, per-class F1, comparison vs best single model
-- [ ] T035 [US4] Create `notebooks/kaggle_submission.ipynb` as a self-contained Kaggle-compatible submission notebook: all preprocessing, feature engineering, model loading, and inference in one notebook; reads data from `/kaggle/input/spr-2026-mammography-report-classification/`; loads pre-trained model weights from Kaggle dataset; produces `submission.csv` at `/kaggle/working/submission.csv`; no internet access required; total runtime < 2h target
-- [ ] T036 [US4] Implement submission sanity checks in `notebooks/kaggle_submission.ipynb`: verify correct columns (`ID`, `target`), correct row count (matches `test.csv`), valid class values (integers 0–6), no missing values, plausible class distribution, and retrain final model on full training set before generating test predictions
+- [X] T030 [US4] Create `notebooks/ensemble.ipynb` with a tagged `parameters` cell containing: `RANDOM_STATE = 42`, `N_FOLDS = 5`, `METRIC = \"f1_macro\"`, `DATA_PATH = \"data/raw/train.csv\"`, `ENSEMBLE_METHOD = \"soft_voting\"`, `MLFLOW_EXPERIMENT = \"birads-ensemble\"`
+- [X] T031 [US4] Implement out-of-fold (OOF) prediction collection in `notebooks/ensemble.ipynb`: load saved OOF probability matrices from top 3+ diverse models (at least 2 model families and 2 feature sets), stack into a single array
+- [X] T032 [US4] Implement weighted soft voting in `notebooks/ensemble.ipynb`: optimize class-probability weights across models using validation fold predictions (scipy.optimize or grid search), evaluate ensemble macro-F1
+- [X] T033 [US4] Implement logistic regression stacking in `notebooks/ensemble.ipynb`: train a `LogisticRegression(class_weight='balanced')` meta-learner on OOF predictions, evaluate via nested CV, compare vs weighted soft voting
+- [X] T034 [US4] Log ensemble results to MLflow in `notebooks/ensemble.ipynb`: log `cv_f1_macro`, `ensemble_method`, component model names, ensemble weights, per-class F1, comparison vs best single model
+
+- [X] T035 [US4] Create `notebooks/kaggle_submission.ipynb` as a self-contained Kaggle-compatible submission notebook: all preprocessing, feature engineering, model loading, and inference in one notebook; reads data from `/kaggle/input/spr-2026-mammography-report-classification/`; loads pre-trained model weights from Kaggle dataset; produces `submission.csv` at `/kaggle/working/submission.csv`; no internet access required; total runtime < 2h target
+- [X] T036 [US4] Implement submission sanity checks in `notebooks/kaggle_submission.ipynb`: verify correct columns (`ID`, `target`), correct row count (matches `test.csv`), valid class values (integers 0–6), no missing values, plausible class distribution, and retrain final model on full training set before generating test predictions
 
 **Checkpoint**: User Story 4 complete — ensemble model optimized and Kaggle submission notebook ready. Submit to Kaggle and track CV-vs-LB gap.
 
@@ -125,12 +126,12 @@
 
 **Purpose**: Final evaluation, error analysis, documentation, and reproducibility validation.
 
-- [ ] T037 [P] Evaluate final model on held-out test set: compute macro-F1, per-class P/R/F1, confusion matrix, log loss, and bootstrap confidence intervals (1000 iterations) on holdout set
-- [ ] T038 [P] Perform error analysis: characterize failure modes per BI-RADS class, identify systematic misclassification patterns (e.g., class 4→2 confusion), analyze misclassified report text for patterns
-- [ ] T039 Compare CV score vs public leaderboard score for calibration: track CV-vs-LB gap per submission, flag if gap > 5 pp
-- [ ] T040 [P] Archive final experiment configuration: save best hyperparameters, feature set version, preprocessing config, and model selection rationale to `specs/001-birads-classification/`
-- [ ] T041 [P] Update `README.md` with new Makefile targets, DVC workflow (`dvc pull`/`dvc push`), experiment replication instructions, and notebook execution guide
-- [ ] T042 Run `quickstart.md` validation: execute all steps from `specs/001-birads-classification/quickstart.md` on a clean environment to verify end-to-end reproducibility
+- [X] T037 [P] Evaluate final model on held-out test set: compute macro-F1, per-class P/R/F1, confusion matrix, log loss, and bootstrap confidence intervals (1000 iterations) on holdout set
+- [X] T038 [P] Perform error analysis: characterize failure modes per BI-RADS class, identify systematic misclassification patterns (e.g., class 4→2 confusion), analyze misclassified report text for patterns
+- [X] T039 Compare CV score vs public leaderboard score for calibration: track CV-vs-LB gap per submission, flag if gap > 5 pp
+- [X] T040 [P] Archive final experiment configuration: save best hyperparameters, feature set version, preprocessing config, and model selection rationale to `specs/001-birads-classification/`
+- [X] T041 [P] Update `README.md` with new Makefile targets, DVC workflow (`dvc pull`/`dvc push`), experiment replication instructions, and notebook execution guide
+- [X] T042 Run `quickstart.md` validation: execute all steps from `specs/001-birads-classification/quickstart.md` on a clean environment to verify end-to-end reproducibility
 
 ---
 

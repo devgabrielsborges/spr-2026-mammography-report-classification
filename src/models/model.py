@@ -9,12 +9,22 @@ import mlflow.sklearn
 import numpy as np
 import optuna
 from dotenv import load_dotenv
-from sklearn.metrics import (ConfusionMatrixDisplay, PrecisionRecallDisplay,
-                             RocCurveDisplay, accuracy_score,
-                             classification_report, f1_score, get_scorer,
-                             log_loss, mean_absolute_error,
-                             mean_squared_error, precision_score, r2_score,
-                             recall_score, roc_auc_score)
+from sklearn.metrics import (
+    ConfusionMatrixDisplay,
+    PrecisionRecallDisplay,
+    RocCurveDisplay,
+    accuracy_score,
+    classification_report,
+    f1_score,
+    get_scorer,
+    log_loss,
+    mean_absolute_error,
+    mean_squared_error,
+    precision_score,
+    r2_score,
+    recall_score,
+    roc_auc_score,
+)
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 
 matplotlib.use("Agg")
@@ -66,9 +76,7 @@ CLASSIFICATION_METRICS = {
     "roc_auc": lambda y, p, proba=None, **_: (
         roc_auc_score(y, proba, multi_class="ovr", average="weighted")
         if proba is not None and hasattr(proba, "ndim") and proba.ndim == 2
-        else roc_auc_score(y, proba)
-        if proba is not None
-        else None
+        else roc_auc_score(y, proba) if proba is not None else None
     ),
     "log_loss": lambda y, p, proba=None, **_: (
         log_loss(y, proba) if proba is not None else None
@@ -118,9 +126,7 @@ class BaseModel(ABC):
         params = self.suggest_params(trial)
         model = self.build_model(params)
         cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-        scores = cross_val_score(
-            model, X_train, y_train, cv=cv, scoring=self.scoring
-        )
+        scores = cross_val_score(model, X_train, y_train, cv=cv, scoring=self.scoring)
         return scores.mean()
 
     def optimize(self, X_train, y_train):
@@ -237,7 +243,9 @@ class BaseModel(ABC):
     def _log_optuna_plots(self, study, plots_dir: Path):
         try:
             from optuna.visualization.matplotlib import (
-                plot_optimization_history, plot_param_importances)
+                plot_optimization_history,
+                plot_param_importances,
+            )
 
             ax = plot_optimization_history(study)
             ax.figure.savefig(
