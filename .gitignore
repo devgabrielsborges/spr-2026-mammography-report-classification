@@ -16,3 +16,11 @@ data/processed/
 notebooks/outputs/
 
 uv.lock
+
+# Universal
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
